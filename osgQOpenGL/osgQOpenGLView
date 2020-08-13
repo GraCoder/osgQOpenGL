@@ -1,5 +1,5 @@
-#ifndef OSGQOPENGLWINDOW_H
-#define OSGQOPENGLWINDOW_H
+#ifndef OSGQOPENGLVIEW_H
+#define OSGQOPENGLVIEW_H
 
 #ifdef __APPLE__
 #   define __glext_h_
@@ -17,19 +17,19 @@
 #endif
 
 #include <osg/ArgumentParser>
-#include <QOpenGLWindow>
+
+#include <QGraphicsView>
 #include <QOpenGLFunctions>
 #include <QReadWriteLock>
 
 class OSGRenderer;
-class QWidget;
 
 namespace osgViewer
 {
     class Viewer;
 }
 
-class OSGQOPENGL_EXPORT osgQOpenGLWindow : public QOpenGLWindow,
+class OSGQOPENGL_EXPORT osgQOpenGLView : public QGraphicsView,
     protected QOpenGLFunctions
 {
     Q_OBJECT
@@ -40,12 +40,14 @@ protected:
     OpenThreads::ReadWriteMutex _osgMutex;
     osg::ArgumentParser* _arguments {nullptr};
 	bool _isFirstFrame {true};
+
     friend class OSGRenderer;
+	friend class VOpenGLWidget;
 
 public:
-    osgQOpenGLWindow();
-    osgQOpenGLWindow(osg::ArgumentParser* arguments, QWindow* parent = nullptr);
-    virtual ~osgQOpenGLWindow();
+    osgQOpenGLView(QWidget* parent = nullptr);
+    osgQOpenGLView(osg::ArgumentParser* arguments, QWidget* parent = nullptr);
+    virtual ~osgQOpenGLView();
 
     /** Get osgViewer View */
     virtual osgViewer::Viewer* getOsgViewer();
@@ -59,16 +61,19 @@ signals:
 protected:
 
     //! call createRender. If overloaded, this method must send initialized signal at end
-    void initializeGL() override;
+    virtual void initializeGL();
 
-    void resizeGL(int w, int h) override;
+    virtual void resizeGL(int w, int h);
 
     //! lock scene graph and call osgViewer::frame()
-    void paintGL() override;
+    virtual void paintGL();
 
     //! called before creating renderer
     virtual void setDefaultDisplaySettings();
 
+	void init();
+
+	void resizeEvent(QResizeEvent *event);
     void keyPressEvent(QKeyEvent* event) override;
     void keyReleaseEvent(QKeyEvent* event) override;
     void mousePressEvent(QMouseEvent* event) override;
@@ -78,6 +83,9 @@ protected:
     void wheelEvent(QWheelEvent* event) override;
 
     void createRenderer();
+
+	void drawBackground(QPainter *painter, const QRectF &rect);
+private:
 };
 
-#endif // OSGQOPENGLWINDOW_H
+#endif // OSGQOPENGLWIDGET_H

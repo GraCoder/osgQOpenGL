@@ -18,6 +18,12 @@ osgQOpenGLWindow::osgQOpenGLWindow()
 {
 }
 
+osgQOpenGLWindow::osgQOpenGLWindow(osg::ArgumentParser * arguments, QWindow * parent)
+	: QOpenGLWindow(QOpenGLWindow::NoPartialUpdate, nullptr)
+	, _arguments(arguments)
+{
+}
+
 osgQOpenGLWindow::~osgQOpenGLWindow()
 {
 }
@@ -126,8 +132,12 @@ void osgQOpenGLWindow::createRenderer()
 {
     // call this before creating a View...
     setDefaultDisplaySettings();
-
-    m_renderer = new OSGRenderer(this);
+	if (!_arguments) {
+		m_renderer = new OSGRenderer(this, enQGLWindow);
+	}
+	else {
+		m_renderer = new OSGRenderer(_arguments, this, enQGLWindow);
+	}
     double pixelRatio = screen()->devicePixelRatio();
     m_renderer->setupOSG(width(), height(), pixelRatio);
 }

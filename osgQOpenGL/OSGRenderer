@@ -32,6 +32,12 @@ namespace eveBIM
     class ViewerWidget;
 }
 
+enum WindowType {
+	enQGLWindow,
+	enQGLWidget,
+	enQGLView
+};
+
 class OSGQOPENGL_EXPORT OSGRenderer : public QObject, public osgViewer::Viewer
 {
     bool                                       m_osgInitialized {false};
@@ -43,15 +49,15 @@ class OSGQOPENGL_EXPORT OSGRenderer : public QObject, public osgViewer::Viewer
     osg::Timer                                 _lastFrameStartTime;
     bool                                       _applicationAboutToQuit {false};
     bool                                       _osgWantsToRenderFrame{true};
+	WindowType								   _windowType;
 
     Q_OBJECT
 
     friend class eveBIM::ViewerWidget;
-
 public:
 
-    explicit OSGRenderer(QObject* parent = nullptr);
-    explicit OSGRenderer(osg::ArgumentParser* arguments, QObject* parent = nullptr);
+    explicit OSGRenderer(QObject* parent = nullptr, WindowType = enQGLWindow);
+    explicit OSGRenderer(osg::ArgumentParser* arguments, QObject* parent = nullptr, WindowType = enQGLWindow);
 
     ~OSGRenderer() override;
 

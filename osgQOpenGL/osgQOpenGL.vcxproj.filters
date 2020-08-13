@@ -42,6 +42,15 @@
     <ClCompile Include="GraphicsWindowEx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="osgQOpenGLView.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsScene.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TestWidget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="RenderStageEx">
@@ -59,6 +68,12 @@
     <None Include="Export">
       <Filter>Header Files</Filter>
     </None>
+    <None Include="GraphicsScene">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="TestWidget">
+      <Filter>Header Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="osgQOpenGLWidget" />
@@ -66,5 +81,6 @@
     <QtMoc Include="OSGRenderer">
       <Filter>Header Files</Filter>
     </QtMoc>
+    <QtMoc Include="osgQOpenGLView" />
   </ItemGroup>
 </Project>

@@ -18,6 +18,7 @@
 
 #include <osgQOpenGL/osgQOpenGLWindow>
 #include <osgQOpenGL/osgQOpenGLWidget>
+#include <osgQOpenGL/osgQOpenGLView>
 
 //#include <osgQOpenGL/CullVisitorEx>
 //#include <osgQOpenGL/GraphicsWindowEx>
@@ -116,8 +117,8 @@ namespace
     static QtKeyboardMap s_QtKeyboardMap;
 } // namespace
 
-OSGRenderer::OSGRenderer(QObject* parent)
-    : QObject(parent), osgViewer::Viewer()
+OSGRenderer::OSGRenderer(QObject* parent, WindowType wt)
+    : QObject(parent), osgViewer::Viewer(), _windowType(wt)
 {
     //    QObject::connect(QCoreApplication::instance(), &QCoreApplication::aboutToQuit,
     //                     [this]()
@@ -128,8 +129,8 @@ OSGRenderer::OSGRenderer(QObject* parent)
     //    });
 }
 
-OSGRenderer::OSGRenderer(osg::ArgumentParser* arguments, QObject* parent)
-    : QObject(parent), osgViewer::Viewer(*arguments)
+OSGRenderer::OSGRenderer(osg::ArgumentParser* arguments, QObject* parent, WindowType wt)
+    : QObject(parent), osgViewer::Viewer(*arguments), _windowType(wt)
 {
     //    QObject::connect(QCoreApplication::instance(), &QCoreApplication::aboutToQuit,
     //                     [this]()
@@ -146,20 +147,32 @@ OSGRenderer::~OSGRenderer()
 
 void OSGRenderer::update()
 {
-    osgQOpenGLWindow* osgWidgetRendered = dynamic_cast<osgQOpenGLWindow*>(parent());
-
-    if(osgWidgetRendered != nullptr)
-    {
-        osgWidgetRendered->_osgWantsToRenderFrame = true;
-        osgWidgetRendered->update();
-    }
-
-    else
-    {
-        osgQOpenGLWidget* osgWidget = dynamic_cast<osgQOpenGLWidget*>(parent());
-        osgWidget->_osgWantsToRenderFrame = true;
-        osgWidget->update();
-    }
+	switch (_windowType)
+	{
+	case enQGLView:
+	{
+		auto view = (osgQOpenGLView*)parent();
+        view->_osgWantsToRenderFrame = true;
+		view->scene()->update();
+		break;
+	}
+	case enQGLWindow:
+	{
+		auto window = (osgQOpenGLWindow*)parent();
+        window->_osgWantsToRenderFrame = true;
+		window->update();
+		break;
+	}
+	case enQGLWidget:
+	{
+		auto* widget = (osgQOpenGLWidget*)(parent());
+        widget->_osgWantsToRenderFrame = true;
+        widget->update();
+		break;
+	}
+	default:
+		break;
+	}    
 }
 
 void OSGRenderer::resize(int windowWidth, int windowHeight, float windowScale)
